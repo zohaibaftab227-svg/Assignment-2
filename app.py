@@ -22,6 +22,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import streamlit as st
+from skimage.feature import hog as skimage_hog
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.datasets import load_digits, load_sample_images
 from sklearn.metrics import (
@@ -329,12 +330,16 @@ def matching_tab():
 # --------------------------------------------------------------------------
 # Tab 4: Classification
 # --------------------------------------------------------------------------
-HOG = cv2.HOGDescriptor((64, 64), (16, 16), (8, 8), (8, 8), 9)
-
-
 def hog_feature(img):
     g = cv2.cvtColor(cv2.resize(img, (64, 64)), cv2.COLOR_BGR2GRAY)
-    return HOG.compute(g).ravel()
+    return skimage_hog(
+        g,
+        orientations=9,
+        pixels_per_cell=(8, 8),
+        cells_per_block=(2, 2),
+        block_norm="L2-Hys",
+        feature_vector=True,
+    ).astype(np.float32)
 
 
 def color_hist_feature(img):
